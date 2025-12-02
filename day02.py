@@ -1,6 +1,6 @@
 #! /usr/local/bin/python3
 #######################################
-# ---  Day 02: Red-Nosed Reports  --- #
+#   ---- Day 02: Gift Shop  ----      #
 #######################################
 
 import AOCUtils
@@ -14,77 +14,48 @@ logger = AOCUtils.setLogger(DAY)
 def test_part1():
   input = AOCUtils.loadInput(DAY)
 
-  assert(part1(input)) == 2
+  assert(validateIDs(input, True)) == 1227775554
 
 def test_part2():
   input = AOCUtils.loadInput(DAY)
 
-  assert(part2(input)) == 4
+  assert(validateIDs(input, False)) == 4174379265
 
 ######
 # -- MAIN --
 ######
-def part1(data):
+def isInvalid(id: str, isEven):
+  idLen = len(id)
+  if (isEven and idLen % 2 != 0):
+    return False
+
+  midpoint = idLen // 2
+  if isEven:
+    firstHalf = id[:midpoint]
+    secondHalf = id[midpoint:]
+    logger.debug("{}|{}".format(firstHalf, secondHalf))
+
+    return firstHalf == secondHalf
+  else:
+    for n in range(1, midpoint+1):
+      searchNum = id[:n]
+      splitNum = id.split(searchNum)
+      logger.debug(splitNum)
+      if ''.join(splitNum) == '':
+        return True
+
+    return False
+
+def validateIDs(data, isEven):
   total = 0
-
-  for levels in data:
-    prevLevel = 0
-    count = 0
-    is_safe = True
-    arrLevels = levels.split(' ')
-    for n in range(len(arrLevels)):
-      level = int(arrLevels[n])
-      if (prevLevel == 0):
-        prevLevel = level
-        continue
-
-      diff = prevLevel - level
-      count = count - 1 if prevLevel < level else count + 1
-      logger.info("{} - {} = {} || {} < {}".format(prevLevel, level, diff, count, n))
-      if (diff == 0 or abs(diff) > 3 or abs(count) < n):
-        is_safe = False
-        break
-
-      prevLevel = level
-
-    logger.info(is_safe)
-    if (is_safe == True):
-      total += 1
-
-  return total
-
-def part2(data):
-  total = 0
-
-  for levels in data:
-    prevLevel = 0
-    count = 0
-    is_safe = True
-    arrLevels = levels.split(' ')
-    is_removed = False
-    for n in range(len(arrLevels)):
-      level = int(arrLevels[n])
-      if (prevLevel == 0):
-        prevLevel = level
-        continue
-
-      diff = prevLevel - level
-      count_change = -1 if prevLevel < level else 1
-      count += count_change
-      logger.info("{} - {} = {} || {} < {}".format(prevLevel, level, diff, count, n))
-      if (diff == 0 or abs(diff) > 3 or abs(count) < n):
-        if (is_removed):
-          is_safe = False
-          break
-
-        is_removed = True
-        count += count_change * -1
-
-      prevLevel = level
-
-    logger.info(is_safe)
-    if (is_safe == True):
-      total += 1
+  for line in data:
+    logger.debug(line)
+    ids = line.split('-')
+    logger.debug(ids)
+    for id in range(int(ids[0]), int(ids[1])+1):
+      if (isInvalid(str(id), isEven)):
+        logger.info("invalid::{}".format(id))
+        total += id
 
   return total
 
@@ -94,11 +65,11 @@ def main():
 
   logger.info(input)
 
-  print('-- part 1: ', part1(input))
+  print('-- part 1: ', validateIDs(input[0].split(','), True))
   AOCUtils.printTimeTaken()
 
-  # print('-- part 2: ', part2(input))
-  # AOCUtils.printTimeTaken()
+  print('-- part 2: ', validateIDs(input[0].split(','), False))
+  AOCUtils.printTimeTaken()
 
 if __name__ == '__main__':
     main()
