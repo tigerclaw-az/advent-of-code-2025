@@ -5,7 +5,6 @@
 
 from math import floor
 import AOCUtils
-import re
 DAY = AOCUtils.setDay(__file__)
 logger = AOCUtils.setLogger(DAY)
 
